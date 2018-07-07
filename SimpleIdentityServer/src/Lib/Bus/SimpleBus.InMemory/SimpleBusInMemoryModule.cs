@@ -13,6 +13,8 @@ namespace SimpleBus.InMemory
 {
     public class SimpleBusInMemoryModule : IModule
     {
+        private const string ServerName = "ServerName";
+
         public void Configure(IApplicationBuilder applicationBuilder)
         {
         }
@@ -29,24 +31,33 @@ namespace SimpleBus.InMemory
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddSimpleBusInMemory(new SimpleBusOptions());
-        }
-
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
+            services.AddSimpleBusInMemory(GetOptions(options));
         }
 
         public IEnumerable<string> GetOptionKeys()
         {
-            return new string[0];
+            return new[]
+            {
+                ServerName
+            };
+        }
+
+        private static SimpleBusOptions GetOptions(IDictionary<string, string> opts)
+        {
+            var result = new SimpleBusOptions();
+            if (opts.ContainsKey(ServerName))
+            {
+                result.ServerName = opts[ServerName];
+            }
+
+            return result;
         }
     }
 }

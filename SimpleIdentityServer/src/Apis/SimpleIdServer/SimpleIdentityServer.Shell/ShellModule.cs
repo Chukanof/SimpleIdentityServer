@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Shell
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env, IDictionary<string, string> options = null)
         {
             if (services == null)
             {
@@ -42,22 +42,7 @@ namespace SimpleIdentityServer.Shell
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (env == null)
-            {
-                throw new ArgumentNullException(nameof(env));
-            }
-
-            if (moduleUiDescriptors == null)
-            {
-                throw new ArgumentNullException(nameof(moduleUiDescriptors));
-            }
-
-            services.AddBasicShell(mvcBuilder, env);
-        }
-
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
+            services.AddBasicShell(mvcBuilder, mvcBuilder);
         }
 
         public IEnumerable<string> GetOptionKeys()

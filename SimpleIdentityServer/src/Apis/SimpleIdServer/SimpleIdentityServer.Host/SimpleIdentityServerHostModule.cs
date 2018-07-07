@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Module;
 using SimpleIdentityServer.OpenId.Logging;
@@ -43,7 +40,7 @@ namespace SimpleIdentityServer.Host
 
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
         {
             if (services == null)
             {
@@ -55,20 +52,7 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            if (env == null)
-            {
-                throw new ArgumentNullException(nameof(mvcBuilder));
-            }
-
             var opts = GetOptions(options);
-            var assembly = typeof(AuthorizationController).Assembly;
-            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            services.Configure<RazorViewEngineOptions>(o =>
-            {
-                o.FileProviders.Add(embeddedFileProvider);
-            });
-
-            mvcBuilder.AddApplicationPart(assembly);
             services.AddOpenIdApi(opts);
         }
 
@@ -92,6 +76,8 @@ namespace SimpleIdentityServer.Host
                 ScimEndpointEnabled
             };
         }
+
+        #region Private methods
 
         private static IdentityServerOptions GetOptions(IDictionary<string, string> options)
         {
@@ -124,13 +110,9 @@ namespace SimpleIdentityServer.Host
             {
                 opts.Scim.EndPoint = options[ScimEndpoint];
             }
-
             return opts;
         }
 
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
-        }
+        #endregion
     }
 }
