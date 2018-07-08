@@ -4,22 +4,28 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Shell
+namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
-    public class ShellModule : IModule
+    public class LoginPasswordModule : IModule
     {
+        private const string IsScimResourceAutomaticallyCreated = "IsScimResourceAutomaticallyCreated";
+        private const string ScimBaseUrl = "ScimBaseUrl";
+        private const string ClaimsIncludedInUserCreation = "ClaimsIncludedInUserCreation";
+        private const string ClientId = "ClientId";
+        private const string ClientSecret = "ClientSecret";
+        private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
+
         public void Configure(IApplicationBuilder applicationBuilder)
         {
-            applicationBuilder.UseShellStaticFiles();
         }
 
         public void Configure(IRouteBuilder routeBuilder)
         {
-            routeBuilder.UseShell();
         }
 
         public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
@@ -42,12 +48,36 @@ namespace SimpleIdentityServer.Shell
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddBasicShell(mvcBuilder, env);
+            // services.AddBasicShell(mvcBuilder, env);
         }
 
         public IEnumerable<string> GetOptionKeys()
         {
             return new string[0];
+        }
+
+        private static BasicAuthenticateOptions BuildOptions(IDictionary<string, string> opts)
+        {
+            var result = new BasicAuthenticateOptions
+            {
+                AuthenticationOptions = new BasicAuthenticationOptions()
+            };
+            if (opts.ContainsKey(ScimBaseUrl))
+            {
+                result.ScimBaseUrl = opts[ScimBaseUrl];
+            }
+
+            if (opts.ContainsKey(ClaimsIncludedInUserCreation))
+            {
+
+            }
+
+            if (opts.ContainsKey(IsScimResourceAutomaticallyCreated))
+            {
+
+            }
+
+            return result;
         }
     }
 }
